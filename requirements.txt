@@ -1,0 +1,9 @@
+sphinx-rtd-theme
+pre-commit
+flake8
+black
+python-dotenv
+pytest>=4.5.0
+nltk
+dataclasses_json
+
