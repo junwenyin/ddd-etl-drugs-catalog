@@ -23,6 +23,7 @@ def read_pub_from_csv(file:str, source:str)-> List[PublicationDetail]:
                 res.append(pub)
             else:
                 pass
+        logger.info("{} lines of publication details are loaded from {}".format(len(res), source))    
         return res   
 
 def read_pub_from_json(file:str, source:str)-> List[PublicationDetail]:
@@ -41,6 +42,7 @@ def read_drug_from_csv(file:str)-> List[DrugDetail]:
                 res.append(drug)
             else:
                 pass
+        logger.info("{} lines of drug details are loaded".format(len(res)))
         return res   
 
 def write_staging_catalogs_to_json_file(staging_catalogs: List[StagingDrugCatalog],file:str)-> None:

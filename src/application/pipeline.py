@@ -34,8 +34,7 @@ def generate_final_catalog(staging_catalogs: List[StagingDrugCatalog]) -> List[D
         for pub in value:
             pubs.append(pub)
         catalog = DrugCatalog(key[0], key[1], pubs)
-        res.append(catalog)
-    print(res[0])    
+        res.append(catalog)    
     return res   
 
 
@@ -51,6 +50,7 @@ class ETLPipeline:
         self.catalog_data = []
 
     def _extract(self) -> None:
+        logger.info("start to extract data from source...")
         self.drugs_data = self.drug_repo.get_by_path_format(self.config.drugs_path, self.config.drugs_format)
         for source in self.config.sources:
             if source == 'pubmed':
@@ -59,6 +59,7 @@ class ETLPipeline:
                 self.pub_data.extend(self.pub_repo.get_by_path_format(self.config.clinical_trials_path, self.config.clinical_trials_format, source))
 
     def _enrich(self) -> None:
+        logger.info("start to enrich data ...")
         for pub in self.pub_data:
             drugs = extract_durg_keywords_from_pub(pub, self.drugs_data)
             for drug in drugs:
@@ -68,16 +69,20 @@ class ETLPipeline:
         self.catalog_repo.save_to_path(self.staging_catalog_data)
 
     def _transform(self) -> None:
+        logger.info("start to transform data ...")
         self.catalog_data = generate_final_catalog(self.staging_catalog_data)
 
     def _load(self) -> None:
+        logger.info("start to save data to output...")
         self.catalog_repo.save_to_path(self.catalog_data)
 
 
     def run(self) -> None:
+        logger.info("start pipeline...")
         self._extract()
         self._enrich()
         self._transform()
         self._load()
+        logger.info("pipeline finished successfully")
 
         
